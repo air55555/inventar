@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import subprocess, os
 import numpy as np
 from PIL import Image
+import cv2
 
 app = Flask(__name__)
 #https://forums.developer.nvidia.com/t/help-needed-handling-images-in-python/107504
@@ -15,7 +16,10 @@ def inv_num_save():
     if request.method=='POST':
         r=request
         nparr = np.fromstring(r.data, np.uint8)
-
+        image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+               # save the image to disk
+        cv2.imwrite("inv" + '.jpg', image)
         im = Image.fromarray(nparr)
         im.save("your_file.jpeg")
         # decode image
