@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request
 import subprocess, os
 import numpy as np
-from PIL import Image
 import cv2
 
 app = Flask(__name__)
@@ -20,8 +19,7 @@ def inv_num_save():
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                # save the image to disk
         cv2.imwrite("inv" + '.jpg', image)
-        im = Image.fromarray(nparr)
-        im.save("your_file.jpeg")
+
         # decode image
         #img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         #file = request.data
@@ -31,20 +29,6 @@ def inv_num_save():
 
 
 
-@app.route('/upload.php')
-def phpexample():
-    command = "c:/php/php.exe /php"
-    out = subprocess.run(command, stdout=subprocess.PIPE)
-    return out.stdout
-
-@app.route('/run_php_script')
-def run_php_script():
-    try:
-        # Execute the PHP script using subprocess
-        result = subprocess.check_output(['php', "php/upload.php"], stderr=subprocess.STDOUT, universal_newlines=True)
-        return f"PHP Script Execution Result: {result}"
-    except subprocess.CalledProcessError as e:
-        return f"Error executing PHP script: {e.output}"
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=80)
