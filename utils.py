@@ -3,14 +3,17 @@ import onnxruntime
 import easyocr
 import numpy as np
 # Load the OCR model
-ocr_reader = easyocr.Reader(['en'])
-
-# Load the ONNX model
-onnx_model_path = 'path/to/your/densenet_ctc_model.onnx'
-onnx_session = onnxruntime.InferenceSession(onnx_model_path)
 
 
-def ocr_jpg_image(image_path):
+def ocr_init():
+    ocr_reader = easyocr.Reader(['en'])
+
+    # Load the ONNX model
+    onnx_model_path = 'DenseNet_CTC.onnx'
+    onnx_session = onnxruntime.InferenceSession(onnx_model_path)
+    return ocr_reader, onnx_session
+
+def ocr_jpg_image(ocr_reader,onnx_session,image_path):
     # Read the image using OpenCV
     img = cv2.imread(image_path)
 
@@ -34,6 +37,6 @@ def ocr_jpg_image(image_path):
 
 
 # Example usage
-image_path = 'path/to/your/image.jpg'
-result = ocr_jpg_image(image_path)
-print("OCR Result:", result)
+# image_path = 'path/to/your/image.jpg'
+# result = ocr_jpg_image(image_path)
+# print("OCR Result:", result)

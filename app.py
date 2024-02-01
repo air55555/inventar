@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import subprocess, os
 import numpy as np
 import cv2
+from utils import ocr_jpg_image, ocr_init
 
 app = Flask(__name__)
 #https://forums.developer.nvidia.com/t/help-needed-handling-images-in-python/107504
@@ -20,6 +21,9 @@ def inv_num_save():
                # save the image to disk
         cv2.imwrite("inv" + '.jpg', image)
 
+        text=ocr_jpg_image(ocr_reader, onnx_session, "inv" + '.jpg')
+        print(text)
+        return "200"
         # decode image
         #img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         #file = request.data
@@ -32,3 +36,4 @@ def inv_num_save():
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=80)
+    ocr_reader, onnx_session = ocr_init()
