@@ -2,14 +2,20 @@ from flask import Flask, render_template, request
 import subprocess, os
 import numpy as np
 import cv2
-from utils import ocr_jpg_image, ocr_init
+from utils import ocr_jpg_image, ocr_init, combine_texts
 
 app = Flask(__name__)
+ocr_reader = ocr_init()
+
 #https://forums.developer.nvidia.com/t/help-needed-handling-images-in-python/107504
 
 @app.route('/')
 def home():
     return render_template('index.html')
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    return "Server OK", 200
 
 @app.route('/inv_num',methods =['POST'] )
 def inv_num_save():
@@ -21,9 +27,14 @@ def inv_num_save():
                # save the image to disk
         cv2.imwrite("inv" + '.jpg', image)
 
-        text=ocr_jpg_image(ocr_reader, onnx_session, "inv" + '.jpg')
-        print(text)
-        return "200"
+        text=ocr_jpg_image(ocr_reader, "inv" + '.jpg' ) #"imgs/rus_text.png"
+        if len(text)>0:
+            multiline = combine_texts(text)
+            #print(text[0][1])
+            #return text[0][1], 200
+            return multiline, 200
+        else:
+            return "No text detected", 200
         # decode image
         #img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         #file = request.data
