@@ -7,7 +7,7 @@ from utils import ocr_jpg_image, ocr_init, combine_texts , \
 
 
 app = Flask(__name__)
-
+ocr_reader = ocr_init()
 
 #https://forums.developer.nvidia.com/t/help-needed-handling-images-in-python/107504
 
@@ -20,7 +20,7 @@ def health_check():
     return "Server OK", 200
 
 @app.route('/inv_num',methods =['POST'] )
-def inv_num_save():
+def inv_num_detect():
     if request.method=='POST':
         r=request
         nparr = np.fromstring(r.data, np.uint8)
@@ -49,4 +49,3 @@ def inv_num_save():
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=80)
-    ocr_reader = ocr_init()

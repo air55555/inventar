@@ -54,7 +54,7 @@ def create_table():
 
 # Create the table when the application starts
 def search_by_inv_num(inv_to_search):
-    conn = sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE_INV_NUM)
     cursor = conn.cursor()
 
     # Search for records with the given inv
@@ -101,11 +101,11 @@ def upload_file(image):
     inv = "111"#request.form.get('inv')  # Assuming inv is provided in the form
     desc = "good apparat"#request.form.get('desc')  # Assuming desc is provided in the form
 
-    conn = sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE_INV_NUM)
     cursor = conn.cursor()
 
     # Insert the record into the database
-    cursor.execute("INSERT INTO uploads (uuid, timestamp, inv, desc) VALUES (?, ?, ?, ?)",
+    cursor.execute("INSERT INTO uploads (uuid, timestamp, inv_num, desc) VALUES (?, ?, ?, ?)",
                    (file_uuid, timestamp, inv, desc))
 
     conn.commit()
