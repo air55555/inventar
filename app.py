@@ -2,10 +2,12 @@ from flask import Flask, render_template, request
 import subprocess, os
 import numpy as np
 import cv2
-from utils import ocr_jpg_image, ocr_init, combine_texts
+from utils import ocr_jpg_image, ocr_init, combine_texts , \
+    search_by_inv_num ,upload_file
+
 
 app = Flask(__name__)
-ocr_reader = ocr_init()
+
 
 #https://forums.developer.nvidia.com/t/help-needed-handling-images-in-python/107504
 
@@ -24,10 +26,10 @@ def inv_num_save():
         nparr = np.fromstring(r.data, np.uint8)
         image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-               # save the image to disk
-        cv2.imwrite("inv" + '.jpg', image)
+               # save the image to disk # Generate a unique ID for the file
+        file_path = upload_file(image)
 
-        text=ocr_jpg_image(ocr_reader, "inv" + '.jpg' ) #"imgs/rus_text.png"
+        text=ocr_jpg_image(ocr_reader, file_path ) #"imgs/rus_text.png"
         if len(text)>0:
             multiline = combine_texts(text)
             #print(text[0][1])
@@ -47,4 +49,4 @@ def inv_num_save():
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=80)
-    ocr_reader, onnx_session = ocr_init()
+    ocr_reader = ocr_init()
