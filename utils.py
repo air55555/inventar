@@ -114,4 +114,25 @@ def upload_file(image):
     return file_path
         #jsonify({"uuid": file_uuid, "status": "File uploaded successfully"}), 201
 
+def search_by_inv_num(inv_to_search, database_path=DATABASE_INV_NUM):
+    conn = sqlite3.connect(database_path)
+    cursor = conn.cursor()
+
+    # Search for records with the given inv
+    cursor.execute("SELECT * FROM records WHERE inv_num = ?", (inv_to_search,))
+    records = cursor.fetchall()
+
+    conn.close()
+
+    if not records:
+        return None  # No records found for the provided inv
+
+    # Convert records to a list of dictionaries for better serialization
+    records_dict = [
+        {"uuid": record[0], "timestamp": record[1], "inv": record[2], "desc": record[3]}
+        for record in records
+    ]
+
+    return records_dict
+
 
