@@ -6,8 +6,8 @@ import sqlite3
 import uuid
 from datetime import datetime
 from flask import  jsonify
-DATABASE_INV_NUM = '/db/imgs.db'
-UPLOAD_FOLDER = '/uploads/'
+DATABASE_INV_NUM = 'db/imgs.db'
+UPLOAD_FOLDER = 'uploads/'
 
 def ocr_init():
     # Load the OCR model
