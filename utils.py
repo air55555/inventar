@@ -53,24 +53,24 @@ def create_table():
 
 
 # Create the table when the application starts
-def search_by_inv_num(inv_to_search):
-    conn = sqlite3.connect(DATABASE_INV_NUM)
-    cursor = conn.cursor()
-
-    # Search for records with the given inv
-    cursor.execute("SELECT * FROM records WHERE inv = ?", (inv_to_search,))
-    records = cursor.fetchall()
-
-    conn.close()
-
-    if not records:
-        return jsonify({"message": "No records found for the provided inv"}), 404
-
-    # Convert records to a list of dictionaries for better serialization
-    records_dict = [{"uuid": record[0], "timestamp": record[1], "inv": record[2], "desc": record[3]} for record in
-                    records]
-
-    return jsonify(records_dict)
+# def search_by_inv_num(inv_to_search):
+#     conn = sqlite3.connect(DATABASE_INV_NUM)
+#     cursor = conn.cursor()
+#
+#     # Search for records with the given inv
+#     cursor.execute("SELECT * FROM records WHERE inv = ?", (inv_to_search,))
+#     records = cursor.fetchall()
+#
+#     conn.close()
+#
+#     if not records:
+#         return jsonify({"message": "No records found for the provided inv"}), 404
+#
+#     # Convert records to a list of dictionaries for better serialization
+#     records_dict = [{"uuid": record[0], "timestamp": record[1], "inv": record[2], "desc": record[3]} for record in
+#                     records]
+#
+#     return jsonify(records_dict)
 
 def parse_inv_num(text):
     """
