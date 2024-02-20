@@ -72,11 +72,37 @@ def create_table():
 #
 #     return jsonify(records_dict)
 
-def parse_inv_num(text):
-    """
-    parse inv_num from dusty text. Return exact, clear inv_num
 
-    """
+# def parse_inv_num(text):
+#     """
+#     parse inv_num from dusty text. Return exact, clear inv_num
+#
+#     """
+#     numbers = []
+#     current_number = ""
+#     started_number = False
+#
+#     for char in text:
+#         if char.isdigit():
+#             started_number = True
+#             current_number += char
+#         elif started_number:
+#             if current_number.startswith("013") \
+#                     or current_number.startswith("72")\
+#                     or current_number.startswith("71"):
+#                 numbers.append(int(current_number))
+#             current_number = ""
+#             started_number = False
+#
+#     # Check for the last number in the string
+#     if started_number and (current_number.startswith("013")
+#                            or current_number.startswith("72")
+#                             or current_number.startswith("71")):
+#         numbers.append(int(current_number))
+#
+#     return numbers
+
+
 def upload_file(image):
 
     # # Check if the request contains the file
@@ -121,18 +147,55 @@ def search_by_inv_num(inv_to_search, database_path=DATABASE_INV_NUM):
     # Search for records with the given inv
     cursor.execute("SELECT * FROM records WHERE inv_num = ?", (inv_to_search,))
     records = cursor.fetchall()
-
-    conn.close()
-
-    if not records:
-        return None  # No records found for the provided inv
-
-    # Convert records to a list of dictionaries for better serialization
     records_dict = [
         {"uuid": record[0], "timestamp": record[1], "inv": record[2], "desc": record[3]}
         for record in records
     ]
 
-    return records_dict
 
+    if not records:
+          # No records found for the provided inv
+
+        #return "test" record if not founnd for testing cyrillic in db, etc
+        #cursor.execute("SELECT * FROM records WHERE inv_num = ?", ('test',))
+        #records = cursor.fetchall()
+
+        records_dict = [
+            {"uuid": "No", "timestamp":"No", "inv": inv_to_search, "desc": "----NO INVENTAR NUM---"}]
+
+
+    conn.close()
+    # Convert records to a list of dictionaries for better serialization
+
+
+    # return string
+    return (str(records_dict))
+
+        #.encode('utf-8').decode('unicode_escape')
+
+def extract_inv_strings(text):
+    """
+    Extract strings from the text that start with "013", "72", or "71" and consider leading zeroes.
+
+    """
+    extracted_strings = []
+
+    current_string = ""
+    started_string = False
+
+    for char in text:
+        if char.isdigit() or char.isalpha():
+            current_string += char
+            started_string = True
+        elif started_string:
+            if current_string.startswith(("013", "72", "71")):
+                extracted_strings.append(current_string)
+            current_string = ""
+            started_string = False
+
+    # Check for the last string in the text
+    if started_string and current_string.startswith(("013", "72", "71")):
+        extracted_strings.append(current_string)
+
+    return extracted_strings
 

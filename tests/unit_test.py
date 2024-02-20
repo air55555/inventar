@@ -6,14 +6,14 @@ from app import app
 import cv2
 import sqlite3
 from utils import search_by_inv_num
-from utils import ocr_init, ocr_jpg_image, combine_texts
+from utils import ocr_init, ocr_jpg_image, combine_texts, extract_inv_strings
 
 class TestYourApp(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
         self.app = app.test_client()
         # Assuming DATABASE_INV_NUM is the path to your test database
-        self.test_db_path = 'db/imgs.db'
+        self.test_db_path = '../db/imgs.db'
 
     def tearDown(self):
         pass
@@ -25,7 +25,7 @@ class TestYourApp(unittest.TestCase):
 
     def test_upload_file(self):
         # Assuming you have an image file for testing in the same directory as your test file
-        image_path = 'imgs/real_apparatus/photo_7_2024-02-10_09-35-05.jpg'
+        image_path = '../imgs/real_apparatus/photo_7_2024-02-10_09-35-05.jpg'
         with open(image_path, 'rb') as image_file:
             image = cv2.imread(image_path)
             _, img_encoded = cv2.imencode("imgs/rus_text_encoded.png", image)
@@ -41,14 +41,12 @@ class TestYourApp(unittest.TestCase):
         self.assertGreater(len(text), 0)
         self.assertIn('01301909', text)
         self.assertIn('омп', text)
-        # Check if the response contains certain symbols
-        #expected_symbols = ['01301909', 'омп']
-        #for symbol in expected_symbols:
+
 
 class TestSearchByInvNum(unittest.TestCase):
     def setUp(self):
         # Assuming you have a test database
-        self.test_db_path = 'db/imgs.db'
+        self.test_db_path = '../db/imgs.db'
         #self.create_test_table()
 
     def tearDown(self):
@@ -71,6 +69,35 @@ class TestSearchByInvNum(unittest.TestCase):
         inv_to_search = 'INVXYZ'
         result = search_by_inv_num(inv_to_search, self.test_db_path)
         self.assertIsNone(result)
+
+class TestExtractInvStrings(unittest.TestCase):
+
+    def test_extract_inv_strings(self):
+        # Test Case 1
+        text1 = "Some text with 013/9 and 72-ABC. Another string starting with 013-XYZ."
+        result1 = extract_inv_strings(text1)
+        self.assertEqual(result1, ['013/9', '72-ABC', '013-XYZ'], f"Test Case 1 Failed: {result1}")
+
+        # Test Case 2
+        text2 = "0711 is a German area code. 7201 is another code."
+        result2 = extract_inv_strings(text2)
+        self.assertEqual(result2, ['0711', '7201'], f"Test Case 2 Failed: {result2}")
+
+        # Test Case 3
+        text3 = "013/9 and 7201 are valid codes. Invalid code: 123."
+        result3 = extract_inv_strings(text3)
+        self.assertEqual(result3, ['013/9', '7201'], f"Test Case 3 Failed: {result3}")
+
+        # Test Case 4
+        text4 = "Codes: 013-ABC, 720-XYZ, 710-123."
+        result4 = extract_inv_strings(text4)
+        self.assertEqual(result4, ['013-ABC', '720-XYZ', '710-123'], f"Test Case 4 Failed: {result4}")
+
+        # Test Case 5
+        text5 = "No valid codes in this text."
+        result5 = extract_inv_strings(text5)
+        self.assertEqual(result5, [], f"Test Case 5 Failed: {result5}")
+
 
 if __name__ == '__main__':
     unittest.main()
